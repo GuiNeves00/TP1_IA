@@ -46,7 +46,7 @@ tabuleiro = [
 #*Variavies globais, utilizadas na funcao minimax e IA_vez
 origem_x_global = 0
 origem_y_global = 0
-
+cont_global = -1
 """
 Funcao para avaliacao heuristica do estado.
 :parametro (estado): o estado atual do tabuleiro
@@ -136,86 +136,73 @@ Um movimento é valido se:
 """
 def movimento_valido(jogador, origem_x, origem_y, destino_x, destino_y, estado):
 #TODO avaliar ganho de desempenho ao deixar de usar celulas_vazias() e passar a usar apenas o argumento estado. Se eh que faz sentido usar celulas_vazias()
-    
-    #print("DENTRO DA FUNCAO MOVIMENTO_VALIDO:")
-    #print(estado[destino_x][destino_y])
-    #print()
-    #print("JOGADOR = ", jogador)
-    #print("origem_x = %i "%origem_x+"origem_y = %i"%origem_y)
-    #print("destino_x = %i "%destino_x + "destino_y = %i"%destino_y)
-    
-    #!EXCLUIR DEPOIS
-    #if jogador == COMP:
-    #    print("RATO")
-    #else:
-    #   print("GATO")
-    
-    valido = False
-    
-    #*RATO
-    if jogador == COMP:
-        #Checa se eh a primeira jogada de um rato
-        primeira_jogada = False
-        if origem_x == 1:
-            primeira_jogada = True
-
-        #print("FP = ", primeira_jogada)
-
-        #NAO deixa o rato se mover pra tras
-        if destino_x < origem_x:
-            #print("IF1")
-            return False
-        #NAO deixa o rato se mover na diagonal SEM capturar o gato
-        elif ((destino_x == (origem_x + 1)) and (destino_y == origem_y -1 or destino_y == origem_y + 1)) and estado[destino_x][destino_y] != HUMANO:
-            #print("IF2")
-            return False
-        elif (origem_y != destino_y) and estado[destino_x][destino_y] != HUMANO:
-            #print("IF20")
-            return False
-        #NAO deixa o rato se mover mais do que uma casa SEM ser sua primeira jogada
-        elif primeira_jogada == False and destino_x > origem_x + 1 or destino_y > origem_y + 1:
-            #print("IF3")
-            return False
-        #NAO deixa o rato se mover na horizontal
-        elif destino_x == origem_x and destino_y != origem_y:
-            #print("IF4")
-            return False
+    try: #! TESTE
+        #*RATO
+        if jogador == COMP:
+            #Checa se eh a primeira jogada de um rato
+            primeira_jogada = False
+            if origem_x == 1:
+                primeira_jogada = True
 
 
-        #Movimentos validos para a primeira jogada de um rato
-        if primeira_jogada == True:
-            #Rato quer se mover uma ou duas celulas a frente que esteja vazia
-            if (destino_x - origem_x == 2 or destino_x - origem_x == 1) and [destino_x, destino_y] in celulas_vazias(estado):
-                #print("IF5")
-                return True
-            #*Rato quer se mover na diagonal para CAPTURAR um gato
-            elif (destino_y == origem_y -1 or destino_y == origem_y + 1) and estado[destino_x][destino_y] == HUMANO: #! destino x < 3
-                #print("IF6")
-                return True
-            else:
-                #print("IF7")
+            #NAO deixa o rato se mover pra tras
+            if destino_x < origem_x:
+                #print("IF1")
                 return False
-        #Nao eh a primeira jogada de um rato
-        else:
-            #Rato quer se mover uma celula para frente que esta vazia 
-            if destino_x == (origem_x + 1) and [destino_x, destino_y] in celulas_vazias(estado):
-                #print("IF8")
-                return True
-            #* Rato captura o gato
-            elif (destino_y == origem_y -1 or destino_y == origem_y + 1) and estado[destino_x][destino_y] == HUMANO: #! destino x < 3
-                #print("IF9")
-                return True
-            else:
-                #print("IF10")
+            #NAO deixa o rato se mover na diagonal SEM capturar o gato
+            elif ((destino_x == (origem_x + 1)) and (destino_y == origem_y -1 or destino_y == origem_y + 1)) and estado[destino_x][destino_y] != HUMANO:
+                #print("IF2")
                 return False
-    #*GATO
-    else:
-        if origem_x != destino_x and origem_y != destino_y: #ANTIGO -> if (origem_x and origem_y) != (destino_x and destino_y):
-            #print("IF11")
-            return False
+            elif (origem_y != destino_y) and estado[destino_x][destino_y] != HUMANO:
+                #print("IF20")
+                return False
+            #NAO deixa o rato se mover mais do que uma casa SEM ser sua primeira jogada
+            elif primeira_jogada == False and destino_x > origem_x + 1 or destino_y > origem_y + 1:
+                #print("IF3")
+                return False
+            #NAO deixa o rato se mover na horizontal
+            elif destino_x == origem_x and destino_y != origem_y:
+                #print("IF4")
+                return False
+
+
+            #Movimentos validos para a primeira jogada de um rato
+            if primeira_jogada == True:
+                #Rato quer se mover uma ou duas celulas a frente que esteja vazia
+                if (destino_x - origem_x == 2 or destino_x - origem_x == 1) and [destino_x, destino_y] in celulas_vazias(estado):
+                    #print("IF5")
+                    return True
+                #*Rato quer se mover na diagonal para CAPTURAR um gato
+                elif (destino_y == origem_y -1 or destino_y == origem_y + 1) and estado[destino_x][destino_y] == HUMANO: #! destino x < 3
+                    #print("IF6")
+                    return True
+                else:
+                    #print("IF7")
+                    return False
+            
+            #Nao eh a primeira jogada de um rato
+            else:
+                #Rato quer se mover uma celula para frente que esta vazia 
+                if destino_x == (origem_x + 1) and [destino_x, destino_y] in celulas_vazias(estado):
+                    #print("IF8")
+                    return True
+                #* Rato captura o gato
+                elif (destino_y == origem_y -1 or destino_y == origem_y + 1) and estado[destino_x][destino_y] == HUMANO: #! destino x < 3
+                    #print("IF9")
+                    return True
+                else:
+                    #print("IF10")
+                    return False
+        #*GATO
         else:
-            #print("IF12")
-            return True
+            if origem_x != destino_x and origem_y != destino_y: #ANTIGO -> if (origem_x and origem_y) != (destino_x and destino_y):
+                #print("IF11")
+                return False
+            else:
+                #print("IF12")
+                return True
+    except IndexError:
+        pass
 """ ---------------------------------------------------------- """
 
 """
@@ -230,102 +217,93 @@ Se True, realiza o movimento corretamente.
 :return: estado atual do tabuleiro, apos realizacao de um execucao de um movimento
 """
 def exec_movimento(jogador, origem_x, origem_y, destino_x, destino_y, estado=tabuleiro):
-    #print("EXEC_MOV:")
-    #TODO checar se preciso disso aq (fim_jogo), ou se esse controle eh/sera feito em outro lugar
-    #Se for o fim do jogo, nao faz sentido avaliar o movimento
-    #if fim_jogo:
-    #    print("IF1")
-    #    return "fim de jogo ja atingido"
-    
+
     #*RATO
     if jogador == COMP:
-        #print("IF2")
-        #Apos validar o movimento, coloca 1 para onde se quer ir e 0 para representar onde estava
+        print("IF2")
+        #Apos validar o movimento, realiza-o
         if movimento_valido(jogador, origem_x, origem_y, destino_x, destino_y, estado):
-            #print("IF3")
+            print("IF3")
             estado[origem_x][origem_y] = 0
             estado[destino_x][destino_y] = COMP
-            return #estado
-        #! comentei o abaixo para testar
-        #else:
-        #    print("IF4 - movimento invalido")
-        #    return False
+            return
+        
     #*GATO
     else:
-        #print("IF5")
-        limite_linha = 0
+        print("IF5")
+        #Testa se o movimento eh valido antes de realiza-lo
         if movimento_valido(jogador, origem_x, origem_y, destino_x, destino_y, estado):
-            #print("IF6")
-            if destino_y == origem_y: #*Movimento Vertical
-                #Avalia se tem um rato no caminho de um movimento vertical
-                # obtem a vertical que se quer fazer o movimento
-                # checa se tem um rato nela, se sim, substituir pelo gato
-                #print("IF7")
-                #limite_linha = 0
-                #for linha in estado:
-                #    aux = linha[destino_y]
-                #    if aux == COMP:
-                #        #print("IF8")
-                #        estado[limite_linha][destino_y] = HUMANO #*Rato Capturado. Move gato para esta posicao
-                #        estado[origem_x][origem_y] = 0 #* Faz celula vazia
-                #        break
-                #    elif limite_linha >= 7:
-                #        #print("IF9")
-                #        estado[destino_x][destino_y] = HUMANO #Nao tem rato no caminho, move gato para esta posicao
-                #        estado[origem_x][origem_y] = 0  #* Faz celula vazia
-        
-                #        break
-                #    limite_linha += 1
+            print("IF6")
 
-                flag = False
-                if 1 in estado[destino_y]:
-                    for i in range (origem_x, destino_x, -1):
-                        if estado[origem_y][i] == 1:
-                            flag = True
-                            estado[origem_y][i] = HUMANO
-                            estado[origem_x][origem_y] = 0  #* Faz celula vazia
-                            break
-                    #*DIREITA
-                    if flag == False:
-                        for i in range (origem_x, destino_x, 1):
-                            if estado[origem_y][i] == 1:
-                                estado[origem_y][i] = HUMANO
-                                estado[origem_x][origem_y] = 0  #* Faz celula vazia
-                                flag = True
-                                break
-                else: #nenhum rato no caminho
-                    estado[destino_x][destino_y] = -1
-                    estado[origem_x][origem_y] = 0  #* Faz celula vazia
-            else: #*Movimento Horizontal
-                #print("IF10")
-                #*ESQUERDA
-                flag = False
-                # rato presente no caminho
-                if 1 in estado[destino_x]:
-                    for i in range (origem_y, destino_y, -1):
-                        if estado[origem_x][i] == 1:
-                            flag = True
-                            estado[origem_x][i] = HUMANO
-                            estado[origem_x][origem_y] = 0  #* Faz celula vazia
-                            break
-                    #*DIREITA
-                    if flag == False:
-                        for i in range (origem_y, destino_y, 1):
-                            if estado[origem_x][i] == 1:
-                                estado[origem_x][i] = HUMANO
-                                estado[origem_x][origem_y] = 0  #* Faz celula vazia
-                                flag = True
-                                break
-                else: #nenhum rato no caminho
-                    estado[destino_x][destino_y] = -1
-                    estado[origem_x][origem_y] = 0  #* Faz celula vazia
-        
+            #*Movimento Vertical
+            if destino_y == origem_y:
+                print("IF7")
+
+                #Verifica se o movimento eh frontal ou traseiro
+                if origem_x > destino_x:
+                    flag_frente = True
+                else:
+                    flag_frente = False
+
+                #*FRONTAL
+                if flag_frente == True:
+                    #Percorre o caminho a ser feito pelo gato
+                    for i in range(origem_x, destino_x, -1):
+                        if estado[i][destino_y] == 1:   #*Existe um rato no caminho, substituir o primeiro rato encontrado pelo gato
+                            estado[i][destino_y] = -1
+                            estado[origem_x][origem_y] = 0
+                            return
+                        flag_frente = False
+
+                #*TRASEIRO
+                else:
+                    #Percorre o caminho a ser feito pelo gato
+                    for i in range(origem_x, destino_x):
+                        if estado[i][destino_y] == 1:   #*Existe um rato no caminho, subsituir o primeiro rato encontrato pelo gato
+                            estado[i][destino_y] = -1
+                            estado[origem_x][origem_y] = 0
+                            return
+
+                #*Nao existe rato no caminho
+                estado[destino_x][destino_y] = -1
+                estado[origem_x][origem_y] = 0
+                return
+
+            #*Movimento Horizontal
+            else:
+                #Verifica se o movimento eh para esquerda ou direita
+                if origem_y < destino_y:
+                    flag_direita = True
+                else:
+                    flag_direita = False
+                
+                #*Direita
+                if flag_direita == True:
+                    #Percorre o caminho a ser feito pelo gato
+                    for i in range(origem_y, destino_y): 
+                        if estado[destino_x][i] == 1:   #*Existe um rato no caminho, subsituir o primeiro rato encontrato pelo gato
+                            estado[destino_x][i] = -1
+                            estado[origem_x][origem_y] = 0
+                            return
+                
+                #*Esquerda
+                else:
+                    #Percorre o caminho a ser feito pelo gato
+                    for i in range(origem_y, destino_y, -1):
+                        if estado[destino_x][i] == 1:   #*Existe um rato no caminho, subsituir o primeiro rato encontrato pelo gato
+                            estado[destino_x][i] = -1
+                            estado[origem_x][origem_y] = 0
+                            return
+                
+                #*Nao existe rato no caminho
+                estado[destino_x][destino_y] = -1
+                estado[origem_x][origem_y] = 0
+                return
+
+        #*Movimento Errado ou Algo Inesperado
         else:
-            #print("IF13")
-            #exibe_tabuleiro(tabuleiro)
-            return #print("movimento invalido")
-        
-        return #estado
+            print("IF13")
+            return print("movimento invalido ou algo inesperado")
 """ ---------------------------------------------------------- """
 """retorna uma lista de tuplas com as posicoes dos ratos"""
 #! FUNCAO NOVA
@@ -367,6 +345,56 @@ def desfaz_movimento(jogador, origem_x, origem_y, destino_x, destino_y, estado_t
     else:
         estado_temp[origem_x][origem_y] = HUMANO
 """ ---------------------------------------------------------- """
+#! FUNCAO NOVA
+"""recebe um jogador, sua origem e o estado do tabuleiro e retorna uma lista de tuplas com as possiveis jogadas partindo desta origem"""
+def jogadas_possiveis(jogador, origem_x, origem_y, estado):
+    possible_plays = []
+    if jogador == COMP:
+        #Rato se move uma casa pra frente
+        if movimento_valido(COMP, origem_x, origem_y, origem_x+1, origem_y, estado):
+            possible_plays.append((origem_x+1, origem_y))
+        #Rato se move duas casas pra frente
+        if movimento_valido(COMP, origem_x, origem_y, origem_x+2, origem_y, estado):
+            possible_plays.append((origem_x+2, origem_y))
+        #Rato come o gato na diagonal direita
+        if movimento_valido(COMP, origem_x, origem_y, origem_x+1, origem_y+1, estado):
+            possible_plays.append((origem_x+1, origem_y+1))
+        #Rato come o gato na diagonal esquerda
+        if movimento_valido(COMP, origem_x, origem_y, origem_x+1, origem_y-1, estado):
+            possible_plays.append((origem_x+1, origem_y-1))
+    
+    elif jogador == HUMANO:
+        for i in range(0, 8):
+            #Gato se move na vertical para frente
+            if movimento_valido(HUMANO, origem_x, origem_y, origem_x-i, origem_y, estado):
+                if origem_x-i >= 0 and origem_x-i <= 7:
+                    possible_plays.append((origem_x-i, origem_y))
+            #Gato se move na vertical para tras
+            if movimento_valido(HUMANO, origem_x, origem_y, origem_x+i, origem_y, estado):
+                if origem_x+i >= 0 and origem_x+i <= 7:
+                    possible_plays.append((origem_x+i, origem_y))
+            #Gato se move na horizontal para a direita
+            if movimento_valido(HUMANO, origem_x, origem_y, origem_x, origem_y+i, estado):
+                if origem_y+i >= 0 and origem_y+i <= 7:
+                    possible_plays.append((origem_x, origem_y+i))
+            #Gato se move na horizontal para a esquerda
+            if movimento_valido(HUMANO, origem_x, origem_y, origem_x, origem_y-i, estado):
+                if origem_y-i >= 0 and origem_y-i <= 7:
+                    possible_plays.append((origem_x, origem_y-i))
+            else:
+                continue
+
+    #Remove jogada onde jogador nao se move
+    remover = (origem_x, origem_y)
+    aux_lista = [tupla for tupla in possible_plays if tupla != remover]
+
+    #Retorna falso se nao existge nenhuma jogada possivel para jogador
+    #if not possible_plays:
+    #    return False
+    
+    possiveis_jogadas =  list(set(aux_lista))   #remove elementos iguais da lista, deixando apenas unicos
+    return possiveis_jogadas
+""" ---------------------------------------------------------- """
 
 """
 Função da IA que escolhe o melhor movimento
@@ -377,60 +405,79 @@ mas nunca será nove neste caso (veja a função iavez())
 :return: uma lista com [melhor linha, melhor coluna, melhor placar]
 """
 def minimax(estado_temp, profundidade, jogador):
+#TODO fazer a funcao jogadas_possiveis, obter uma lista de jogadas possiveis para jogador e iterar sobre cada jogada, ao final o minimax iria retornar qual foi a melhor jogada (recursao)
 
     if jogador == COMP:
         melhor = [-1, -1, -infinity]
     else:
         melhor = [-1, -1, +infinity]
 
-    if profundidade == 9 or fim_jogo(estado_temp):
+    if profundidade == 0 or fim_jogo(estado_temp):
         placar = avaliacao(estado_temp)
         return [-1, -1, placar]
 
-    flag = True
-    
-    for cell in celulas_vazias(estado_temp):
-        #SELECIONA UM RATO ALEATORIO para movimentar apenas na primeira chamada de minimax (errado, apenas na primeira iteracao do for)
-        if flag == True and jogador == 1:
-            origem_aleatoria = choice(posicoes_ratos(estado_temp))
-            origem_x = origem_aleatoria[0]
-            origem_y = origem_aleatoria[1]
-            flag = False
-        #obtem as coordenadas de onde o gato esta
-        if jogador == -1:                  #! V IMPORTANTE
-            if not encontra_gato(estado_temp):   #TODO ver se isso faz sentido aq 
+    #Recompensa a jogada onde o rato come o gato
+    if jogador == COMP:
+        if not encontra_gato(estado_temp):
+            if placar[2] > melhor[2]:
                 return melhor
-            origem_x = encontra_gato(estado_temp)[0]
-            origem_y = encontra_gato(estado_temp)[1]
-                
-        #escolhe um destino aleatorio
-        destino_x = cell[0]
-        destino_y = cell[1]
-        #testa se o movimento adquirido acima eh valido, se nao, volta para o for e repete este processo ate encontrar um movimento valido
-        if movimento_valido(jogador, origem_x, origem_y, destino_x, destino_y, estado_temp) == False:
-            continue
+    #Recompensa a jogada onde um gato come o ultimo rato
+    else:
+        if not posicoes_ratos(estado_temp):
+            if placar[2] > melhor[2]:
+                return melhor
+    
+    #Obtem um rato
+    if jogador == 1:
+        for rato in posicoes_ratos(estado_temp):
+            origem_x = rato[0]
+            origem_y = rato[1]
+            #break #! remover o break resulta em ratos fazendo melhores jogadas mas demorando para comer o gato
+    #Obtem um gato
+    else:
+        origem_x = encontra_gato(estado_temp)[0]
+        origem_y = encontra_gato(estado_temp)[1]
 
-        exec_movimento(jogador, origem_x, origem_y, destino_x, destino_y, estado_temp)
-        placar = minimax(estado_temp, profundidade - 1, -jogador)
+    try:
+        for jogadas in jogadas_possiveis(jogador, origem_x, origem_y, estado_temp):
 
-        placar[0] = destino_x
-        placar[1] = destino_y
+            destino_x = jogadas[0]
+            destino_y = jogadas[1]
+            
+            exec_movimento(jogador, origem_x, origem_y, destino_x, destino_y, estado_temp)
+            
+            placar = minimax(estado_temp, profundidade-1, -jogador)
 
-        if jogador == COMP:
-            if placar[2]> melhor[2]:
-                melhor = placar
-        else:
-            if placar[2] < melhor[2]:
-                melhor = placar
+            placar[0] = destino_x
+            placar[1] = destino_y
 
-
+            if jogador == COMP:
+                if placar[2] > melhor[2]:
+                    melhor = placar
+            else:
+                if placar[2] < melhor[2]:
+                    melhor = placar
+    except TypeError:
+        pass
+    
     global origem_x_global
     global origem_y_global
     origem_x_global = origem_x
     origem_y_global = origem_y
-
     return melhor
 
+
+    #! obtem um rato
+    #! obtem todas as jogadas possiveis para este rato:
+    #! for teste in jogadas_possiveis(jogador, origem_x, origem_y, estado_temp)     itera sobre estas jogadas
+    #!      destino_x & destino_y = jogadas_possiveis[0][0], [0][1]
+    #!      exec_movimento()
+    #!      se gato morto ou fim de jogo:
+    #!          retorna melhor jogada
+    #!      placar = minimax()
+    #!      placar[0] & [1] = destinos
+    #!      
+    #!      ...    
 
 """ ---------------------------------------------------------- """
 
@@ -485,27 +532,24 @@ def IA_vez():
     #TODO entender oque essa condicao signfica. pro jogo da velha, acredito q profundidade == 9 represente a primeira jogada da IA
     #! IMPORTANTE
     #TODO consertar isso -> sempre que chamar IA_vez() vai pegar um dos movimentos abaixo, mas em dado momento do jogo, os movimentos abaixo nao serao mais validos
-    #Pega um movimento aleatoria qualquer de inicio
+    #Pega um movimento aleatorio qualquer de inicio
     origem_x = 1
     origem_y = choice([0, 1, 2, 5, 6, 7])
     destino_x = choice([2, 3])
     destino_y = choice([0, 1, 2, 5, 6, 7])
-    if profundidade == 54:
+    if profundidade == 32: #! ANTES 32
         #Testa ate achar um movimento valido
         while not movimento_valido(COMP, origem_x, origem_y, destino_x, destino_y, tabuleiro): #!TODO deve dar pra ganhar desemepnho aqui
             origem_x = 1
             origem_y = choice([0, 1, 2, 5, 6, 7])
             destino_x = choice([2, 3])
             destino_y = choice([0, 1, 2, 5, 6, 7])
-        #print("*!*ANTES0")
+        print("IA_VEZ")
         exec_movimento(COMP, origem_x, origem_y, destino_x, destino_y, tabuleiro) #!
-        #print("*!*DEPOIS0")
     else:
         move = minimax(estado_temp, profundidade, COMP)
         destino_x, destino_y = move[0], move[1]
-        #print("*!*ANTES")
         exec_movimento(COMP, origem_x_global, origem_y_global, destino_x, destino_y, tabuleiro) #!
-        #print("*!*DEPOIS")
 
         return
     time.sleep(1)
